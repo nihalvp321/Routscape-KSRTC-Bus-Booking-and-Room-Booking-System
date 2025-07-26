@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='userhome.css') }}">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+<div class="topnav">
+    <div class="nav-left">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="nav-logo">
+    </div>
+
+    <div class="nav-links">
+        <a href="#" onclick="showSection('home')">Home</a>
+        <a href="#" onclick="showSection('bookroom')">Book Room</a>
+        <a href="#" onclick="showSection('bookbus')">Book Bus</a>
+        <a href="#" onclick="showSection('rent')">Accessories Rentals</a>
+        <a href="#" onclick="showSection('memories')">Post Travel Memories</a>
+        <a href="#" onclick="showSection('feedback')">Feedback</a>
+    </div>
+
+    <div class="nav-profile">
+        <img src="{% if profile_image != 'noprofile.png' %}{{ url_for('static', filename='uploads/' + profile_image) }}{% else %}{{ url_for('static', filename='noprofile.png') }}{% endif %}?t={{ current_time }}" class="profile-pic" alt="Profile">
+        <span class="username">{{ username }}</span>
+        <a href="{{ url_for('profile') }}" class="profile-btn">Profile</a>
+        <a href="{{ url_for('userlogout') }}" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+        <!-- Top Nav Sections -->
+        <div id="home" class="section active">
+    <h2>Welcome to RouteScape 🌍</h2>
+    <p style="font-size: 16px; line-height: 1.6;">
+        Your all-in-one platform for planning, organizing, and cherishing your travel experiences.
+    </p>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <h4>🛏️ Book Room</h4>
+            <p>Find affordable and comfortable stays near your destination.</p>
+        </div>
+        <div class="feature-card">
+            <h4>🚌 Book Bus</h4>
+            <p>Reserve bus seats with real-time availability and pickup points.</p>
+        </div>
+        <div class="feature-card">
+            <h4>🎒 Accessories Rentals</h4>
+            <p>Rent travel accessories like tents, backpacks, and more.</p>
+        </div>
+        <div class="feature-card">
+            <h4>📸 Post Travel Memories</h4>
+            <p>Share your journeys through photos and stories.</p>
+        </div>
+    </div>
+
+    <!-- All Users' Posts Section -->
+    <div class="all-posts-section">
+        <h3 style="margin-top: 30px;">🌟 Traveler Moments Shared by Others</h3>
+        <div class="small-posts-grid">
+            {% if all_posts %}
+                {% for post in all_posts %}
+                <div class="small-post-card">
+                    <div class="small-post-header">
+                        <img src="{{ url_for('static', filename='uploads/' + (post['profile_pic'] if post['profile_pic'] else 'noprofile.png')) }}" class="small-profile-pic" alt="Profile">
+                        <div>
+                            <strong>{{ post['username'] }}</strong><br>
+                            <small>{{ post['created_at'] }}</small>
+                        </div>
+                    </div>
+                    <div class="small-post-media">
+                        <img src="{{ url_for('static', filename='uploads/' + post['photo']) }}" alt="Post">
+                    </div>
+                    <p class="small-caption">{{ post['caption'] }}</p>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; font-size: 18px; color: #555; margin-top: 20px;">
+                    No posts found.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+        <div id="bookroom" class="section"><br>
+            <h3>Room Search</h3>
+            <form method="POST" action="/userhome" class="room-search-form">
+                <select name="room_type" required>
+                    <option value="">-- Select Room Type --</option>
+                    <option value="All" {% if room_type == 'All' %}selected{% endif %}>All Rooms</option>
+                    <option value="Single" {% if room_type == 'Single' %}selected{% endif %}>Single Room</option>
+                    <option value="Double" {% if room_type == 'Double' %}selected{% endif %}>Double Room</option>
+                    <option value="Deluxe" {% if room_type == 'Deluxe' %}selected{% endif %}>Deluxe Room</option>
+                    <option value="Suite" {% if room_type == 'Suite' %}selected{% endif %}>Suite Room</option>
+                </select>
+                <button type="submit">Search Room</button>
+            </form>
+        </div>
+        <br>
+<div id="room-listings" class="details-section">
+  <h3>Room Listings</h3>
+  <div class="room-container">
+    {% if rooms %}
+      {% for room in rooms %}
+        <div class="room-card">
+          <div class="carousel-container" id="carousel-container-{{ room.id }}">
+            {% set images = room_images[room.id] %}
+            <div class="carousel-images" id="carousel-images-{{ room.id }}">
+              {% for image in images %}
+              <img src="{{ url_for('static', filename=image) }}" class="carousel-image" alt="Room Image" />
+              {% endfor %}
+            </div>
+            <div class="carousel-controls">
+              <button onclick="prevSlide({{ room.id }})">⟨</button>
+              <span id="carousel-indicator-{{ room.id }}">1 / {{ images|length }}</span>
+              <button onclick="nextSlide({{ room.id }})">⟩</button>
+            </div>
+          </div>
+
+          <div class="room-info">
+            <h3>Room {{ room.room_name }} - {{ room.type }}</h3>
+            <p>{{ room.description }}</p>
+            <p><strong>Price:</strong> ₹{{ room.price_per_night }} / night</p>
+            <p><strong>Max Occupancy:</strong> {{ room.max_occupancy }}</p>
+            {% if room.is_available %}
+              <p style="color:green; font-weight:bold">Available</p>
+              <button type="button" style="background:#2d6a4f;" onclick="showBookingModal('{{ room.room_name }}', '{{ room.type }}')">Book Room</button>
+            {% else %}
+              <p style="color:red; font-weight:bold">Not Available</p>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:gray;">No rooms available for the selected type.</p>
+    {% endif %}
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.carousel-container').forEach(container => {
+      const roomId = container.id.split('-')[2];
+      initializeCarousel(roomId);
+    });
+  });
+
+  function initializeCarousel(roomId) {
+    const images = document.querySelectorAll(`#carousel-images-${roomId} .carousel-image`);
+    if (!images.length) return;
+    images[0].classList.add('active');
+  }
+
+  function nextSlide(roomId) {
+    const images = document.querySelectorAll(`#carousel-images-${roomId} .carousel-image`);
+    const currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+    const nextIndex = (currentIndex + 1) % images.length;
+
+    images[currentIndex].classList.remove('active');
+    images[nextIndex].classList.add('active');
+
+    updateIndicator(roomId, nextIndex + 1, images.length);
+  }
+
+  function prevSlide(roomId) {
+    const images = document.querySelectorAll(`#carousel-images-${roomId} .carousel-image`);
+    const currentIndex = Array.from(images).findIndex(img => img.classList.contains('active'));
+    const prevIndex = (currentIndex - 1 + images.length) % images.length;
+
+    images[currentIndex].classList.remove('active');
+    images[prevIndex].classList.add('active');
+
+    updateIndicator(roomId, prevIndex + 1, images.length);
+  }
+
+  function updateIndicator(roomId, current, total) {
+    const indicator = document.getElementById(`carousel-indicator-${roomId}`);
+    if (indicator) {
+      indicator.textContent = `${current} / ${total}`;
+    }
+  }
+</script>
+
+
+<div id="booking-alert" style="position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 10050;"></div>
+<style>.alert {
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    animation: fadeInOut 2.5s ease-in-out;
+    margin-top: 10px;
+}
+.alert.success {
+    background-color: #28a745;
+}
+.alert.error {
+    background-color: #dc3545;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+</style>
+        <!-- Booking Modal -->
+<div id="booking-modal" class="modal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.4); padding-top: 60px;">
+    <div class="modal-content" style="background-color: white; margin: auto; padding: 30px 25px; border: 1px solid #ccc; width: 100%; max-width: 400px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); position: relative;">
+        <span class="close-btn" onclick="closeBookingModal()" style="color: #888; font-size: 26px; font-weight: bold; position: absolute; top: 10px; right: 15px; cursor: pointer;">&times;</span>
+        
+        <h4 style="text-align: center; color: #2d6a4f; margin-bottom: 20px;">Book Room</h4>
+        
+        <form id="booking-form" method="POST" action="/book_room" style="display: flex; flex-direction: column; gap: 15px;">
+            <input type="hidden" name="room_name" id="room_name">
+            <input type="hidden" name="room_type" id="room_type">
+
+            <div style="display: flex; flex-direction: column;">
+    <label for="phone" style="font-weight: 600; margin-bottom: 5px;">Phone Number:</label>
+    <input type="text" name="phone" id="phone" required
+           style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width:350px"
+           placeholder="Enter your phone number" />
+</div>
+
+
+
+    
+            <div style="display: flex; flex-direction: column;">
+                <label for="date_from" style="font-weight: 600; margin-bottom: 5px;">Check-in Date:</label>
+                <input type="date" name="date_from" required placeholder="Select check-in date"
+                    style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width:350px">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="date_to" style="font-weight: 600; margin-bottom: 5px;">Check-out Date:</label>
+                <input type="date" name="date_to" required placeholder="Select check-out date"
+                    style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width:350px">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="check_in" style="font-weight: 600; margin-bottom: 5px;">Check-in Time:</label>
+                <input type="time" name="check_in" required placeholder="Select check-in time"
+                    style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width:350px">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="check_out" style="font-weight: 600; margin-bottom: 5px;">Check-out Time:</label>
+                <input type="time" name="check_out" required placeholder="Select check-out time"
+                    style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; width:350px">
+            </div>
+    
+            <button type="submit" id="confirm-booking-btn" style="margin-top: 10px; background:#2d6a4f; color: white; font-weight: bold; padding: 12px; border: none; border-radius: 6px; cursor: pointer; transition: background 0.3s; width:350px;">Confirm Booking</button>
+            <div id="booking-success-message" style="display: none; color: green; font-weight: bold; margin-bottom: 10px;"></div>
+
+            
+            <!-- Inside the booking modal, after the Confirm Booking button -->
+            <button type="button" id="download-room-receipt-btn"
+        style="display:none; margin-top: 10px; background-color: #0077b6; color: white; font-weight: bold; padding: 12px; border: none; border-radius: 6px; cursor: pointer;"
+        onclick="downloadRoomReceipt()">Download Receipt</button>
+        </form>
+    </div>
+</div>
+
+        
+        
+                
+<!-- Bus Booking Section -->
+<div id="bookbus" class="section">
+    <div class="bus-card-container">
+        {% if buses %}
+            {% for bus in buses %}
+            <div class="bus-card" id="bus-{{ bus.id }}">
+                <img src="{{ bus.image_path }}" alt="Bus Image" class="bus-image">
+                <div class="bus-info">
+                    <h4>{{ bus.bus_number }}</h4>
+                    <p><strong>From:</strong> {{ bus.starting_point }}</p>
+                    <p><strong>To:</strong> {{ bus.ending_point }}</p>
+                    <p><strong>Source Time:</strong> {{ bus.source_time }}</p>
+                    <p><strong>Destination Time:</strong> {{ bus.destination_time }}</p>
+                    <p><strong>Rate:</strong> Rs. {{ bus.rate }}</p>
+                    <p><strong>Available Seats:</strong> {{ bus.available_seats }}</p>
+                    <button onclick="loadSeats({{ bus.id }})" style="background:#2d6a4f;">Book Seats</button>
+                </div>
+
+                <div class="seat-wrapper" id="seat-wrapper-{{ bus.id }}" style="display:none;">
+                    <div class="seat-header">
+                        <span>Select Your Seat</span>
+                        <button class="close-seat-btn" onclick="closeSeats({{ bus.id }})">✖</button>
+                    </div>
+                    <div class="seat-container" id="seat-container-{{ bus.id }}"></div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center; font-size:18px; color:#555;">No buses found.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div id="payment-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="closePaymentModal()">&times;</span>
+        <h3>Confirm Payment</h3>
+        <p id="payment-bus-info"></p>
+        <p><strong>Amount to Pay:</strong> Rs. <span id="payment-amount"></span></p>
+        <button onclick="confirmDummyPayment()" style="background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer;">Pay Now</button>
+        <button id="download-bus-receipt-btn" style="display: none; background-color: #2196F3; color: white; padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer;" onclick="downloadBusReceipt()">Download Receipt</button>
+    </div>
+</div>
+
+<div id="rent" class="section">
+    {% if accessories|length == 0 %}
+        <div class="alert alert-danger" role="alert" style="display: flex; justify-content: center; align-items: center; text-align: center;">
+            No accessories found.
+        </div>
+    {% else %}
+        <div class="accessory-grid">
+            {% for accessory in accessories %}
+                <div class="col mb-4">
+                    <div class="accessory-card card h-100">
+                        <div class="carousel-container p-3">
+                            <div class="carousel slide" id="carousel_{{ accessory.id }}" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    {% for img in accessory.images %}
+                                    <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
+                                        <img src="{{ url_for('static', filename=img) }}" class="d-block w-100" style="height: 200px; object-fit: cover;" alt="Accessory Image">
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% if accessory.images|length > 1 %}
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel_{{ accessory.id }}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel_{{ accessory.id }}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ accessory.name }}</h5>
+                            <p class="card-text">{{ accessory.description }}</p>
+                            <p><strong>Rate:</strong> ₹{{ accessory.rate }} / day</p>
+                            <p class="card-text">Available Items: {{ accessory.total_items }}</p>
+
+                            <!-- Rent Button -->
+                            <form action="{{ url_for('book_accessory', accessory_id=accessory.id) }}" method="post" id="book-form-{{ accessory.id }}">
+                                <button type="button"
+                                        {% if accessory.total_items == 0 %}disabled style="opacity: 0.6; cursor: not-allowed;"{% endif %}
+                                        class="btn btn-primary"
+                                        onclick="confirmBooking({{ accessory.id }})">
+                                    {% if accessory.total_items == 0 %}Out of Stock{% else %}Take Rent{% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if receipt_url %}
+            <p class="mt-4 text-success" style="text-align: center;">
+                Your booking was successful! 
+                <a href="{{ receipt_url }}" download>Click here to download your receipt.</a>
+            </p>
+        {% endif %}
+    {% endif %}
+</div>
+
+<script>
+    function confirmBooking(accessoryId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to book this accessory?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, book it!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('book-form-' + accessoryId).submit();
+            }
+        });
+    }
+</script>
+
+
+        <div id="memories" class="section">
+            <!-- Post Upload Form -->
+            <form action="{{ url_for('upload_post') }}" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="caption">Caption</label>
+                    <textarea name="caption" id="caption" class="form-control" placeholder="Write a caption..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="media">Upload Image/Video</label>
+                    <input type="file" name="media" id="media" class="form-control" accept="image/*,video/*" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="background:#254c3a;">Post</button>
+            </form>
+            <div class="section-title-container">
+    <h4 class="section-title1">My Memories</h4>
+</div>
+
+            {% if posts %}
+                <div class="posts-grid">
+                    {% for post in posts %}
+                        <div class="post-card">
+                            <div class="post-header">
+                                <img src="{{ url_for('static', filename='uploads/' + (post['profile_pic'] if post['profile_pic'] else 'noprofile.png')) }}" class="post-profile-pic" alt="Profile">
+                                <div>
+                                    <strong>{{ post['username'] }}</strong><br>
+                                    <small>{{ post['created_at'] }}</small>
+                                </div>
+                            </div>
+                            <div class="post-media">
+                                <img src="{{ url_for('static', filename='uploads/' + post['photo']) }}" alt="Post" />
+                            </div>
+                            <p class="caption">{{ post['caption'] }}</p>
+        
+                            <!-- Update & Delete Buttons -->
+                            <div class="post-actions">
+                                <!-- Hidden form for updating caption -->
+                                <form id="update-form-{{ post['id'] }}" action="{{ url_for('update_post', post_id=post['id']) }}" method="POST" style="display: none;">
+                                    <input type="hidden" name="caption" id="caption-input-{{ post['id'] }}">
+                                </form>
+                            
+                                <!-- Update button triggers prompt -->
+                                <a href="#" class="btn btn-warning" onclick="updateCaption({{ post['id'] }}, '{{ post['caption'] | escape }}')">Update</a>
+                            
+                                <!-- Delete button -->
+                                <a href="{{ url_for('delete_post', post_id=post['id']) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this post?');">Delete</a>
+                            </div>
+                            
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No posts yet. Share your travel memories!</p>
+            {% endif %}
+        </div>
+        
+        </div>
+
+        <!-- Sidebar Sections -->
+        <div id="feedback" class="section">
+        <form action="{{ url_for('submit_feedback') }}" method="POST" class="feedback-form">
+                
+                <!-- Comment Section -->
+                <textarea name="comment" placeholder="Write your feedback..." rows="3" required></textarea>
+                
+                <!-- Star Rating Section below the comment -->
+                <div class="star-rating">
+                    {% for i in range(5, 0, -1) %}
+                        <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
+                        <label for="star{{ i }}">&#9733;</label>
+                    {% endfor %}
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        
+
+    <script>
+       // Function to handle showing a section and adding/removing 'active-link' class
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(section => section.classList.remove('active'));
+
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    const roomListingsSection = document.getElementById('room-listings');
+    if (roomListingsSection) {
+        roomListingsSection.style.display = sectionId === 'bookroom' ? 'block' : 'none';
+    }
+
+    // Clear active-link from all navigation areas
+    document.querySelectorAll('.navbar a, .sidebar .menu li a, .nav-links a').forEach(link => {
+        link.classList.remove('active-link');
+    });
+
+    // Apply active-link to the clicked link
+    document.querySelectorAll('.navbar a, .sidebar .menu li a, .nav-links a').forEach(link => {
+        if (link.getAttribute('onclick')?.includes(sectionId)) {
+            link.classList.add('active-link');
+        }
+    });
+
+    // Store state
+    localStorage.setItem('activeSection', sectionId);
+}
+
+window.onload = () => {
+    const savedSection = localStorage.getItem('activeSection') || 'home';
+    showSection(savedSection);
+};
+
+        
+
+        // ---------- UPDATE POST CAPTION ----------
+        function updateCaption(postId, oldCaption) {
+            const newCaption = prompt("Update your caption:", oldCaption);
+            if (newCaption !== null) {
+                document.getElementById(`caption-input-${postId}`).value = newCaption;
+                document.getElementById(`update-form-${postId}`).submit();
+            }
+        }
+        
+    
+        // ---------- BUS BOOKING ----------
+        let busReceiptData = {};
+
+function loadSeats(busId) {
+    const seatWrapper = document.getElementById(`seat-wrapper-${busId}`);
+    const seatContainer = document.getElementById(`seat-container-${busId}`);
+    seatWrapper.style.display = 'block';
+    seatContainer.innerHTML = '<p>Loading seats...</p>';
+
+    fetch(`/get_seats/${busId}`)
+        .then(res => res.json())
+        .then(seats => {
+            seatContainer.innerHTML = '';
+            seats.forEach(seat => {
+                const btn = document.createElement("button");
+                btn.textContent = seat.seat_number;
+                btn.classList.add("seat-btn");
+
+                if (seat.is_booked) {
+                    btn.classList.add("booked");
+                    btn.disabled = true;
+                } else {
+                    btn.onclick = function () {
+                        Swal.fire({
+                            title: `Confirm Booking`,
+                            text: `Do you want to book seat ${seat.seat_number}?`,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, Book it!',
+                            cancelButtonText: 'No'
+                        }).then(result => {
+                            if (result.isConfirmed) {
+                                fetch(`/get_bus_rate/${busId}`)
+                                    .then(res => res.json())
+                                    .then(bus => {
+                                        busReceiptData = {
+                                            seat_id: seat.id,
+                                            bus_id: busId,
+                                            seat_number: seat.seat_number,
+                                            bus_number: bus.bus_number,
+                                            rate: bus.rate,
+                                            source_time: bus.source_time,
+                                            destination_time: bus.destination_time,
+                                            username: "{{ username }}"
+                                        };
+
+                                        document.getElementById('payment-bus-info').textContent = `Bus No: ${bus.bus_number}, Seat: ${seat.seat_number}`;
+                                        document.getElementById('payment-amount').textContent = bus.rate;
+                                        document.getElementById('download-bus-receipt-btn').style.display = 'none';
+                                        document.getElementById('payment-modal').style.display = 'flex';
+                                    });
+                            }
+                        });
+                    };
+                }
+
+                seatContainer.appendChild(btn);
+            });
+        });
+}
+
+function confirmDummyPayment() {
+    fetch(`/book_seat/${busReceiptData.seat_id}/${busReceiptData.bus_id}`, {
+        method: 'POST'
+    })
+        .then(res => res.json())
+        .then(data => {
+            Swal.fire({
+                icon: data.status === 'success' ? 'success' : 'error',
+                title: data.message,
+                showConfirmButton: false,
+                timer: 2000
+            });
+
+            if (data.status === 'success') {
+                document.getElementById('download-bus-receipt-btn').style.display = 'inline-block';
+                setTimeout(() => {
+                    loadSeats(busReceiptData.bus_id);
+                }, 2000);
+            }
+        });
+}
+
+function downloadBusReceipt() {
+    if (!window.jspdf) {
+        Swal.fire('Error', 'jsPDF not loaded', 'error');
+        return;
+    }
+
+    const { bus_number, rate, seat_number, username, source_time, destination_time } = busReceiptData;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(0, 102, 204); // Blue
+    doc.text("Bus Ticket Receipt", 20, 20);
+
+    // Divider
+    doc.setDrawColor(0, 0, 0);
+    doc.line(20, 23, 190, 23);
+
+    // Section Title
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text("Ticket Details", 20, 35);
+
+    // Ticket details
+    doc.setFontSize(12);
+    doc.setTextColor(50, 50, 50);
+    doc.text(`Passenger Name    : ${username}`, 20, 45);
+    doc.text(`Bus Number        : ${bus_number}`, 20, 52);
+    doc.text(`Seat Number       : ${seat_number}`, 20, 59);
+    doc.text(`Amount Paid       : ₹${rate}`, 20, 66);
+    doc.text(`Source Time       : ${source_time}`, 20, 73);
+    doc.text(`Destination Time  : ${destination_time}`, 20, 80);
+    doc.text(`Booking Time      : ${new Date().toLocaleString()}`, 20, 87);
+
+    // Divider
+    doc.line(20, 92, 190, 92);
+
+    // Footer Message
+    doc.setFontSize(12);
+    doc.setTextColor(0, 128, 0); // Green
+    doc.text("✅ Thank you for traveling with us!", 20, 102);
+
+    // Save PDF
+    doc.save(`BusTicket_${bus_number}_${seat_number}.pdf`);
+}
+
+function closeSeats(busId) {
+    const seatWrapper = document.getElementById(`seat-wrapper-${busId}`);
+    seatWrapper.style.display = 'none';
+}
+
+function closePaymentModal() {
+    document.getElementById('payment-modal').style.display = 'none';
+}
+
+// ---------- ROOM BOOKING ----------
+const currentImageIndexes = {};
+
+function showImage(carouselId, index) {
+    const images = document.querySelectorAll(`#carousel-${carouselId} .carousel-image`);
+    if (!images.length) return;
+
+    index = (index + images.length) % images.length;
+    currentImageIndexes[carouselId] = index;
+
+    images.forEach((img, i) => {
+        img.classList.toggle('active', i === index);
+    });
+
+    const indicator = document.getElementById(`indicator-${carouselId}`);
+    if (indicator) {
+        indicator.textContent = `${index + 1} / ${images.length}`;
+    }
+}
+
+function nextImage(carouselId) {
+    const current = currentImageIndexes[carouselId] || 0;
+    showImage(carouselId, current + 1);
+}
+
+function prevImage(carouselId) {
+    const current = currentImageIndexes[carouselId] || 0;
+    showImage(carouselId, current - 1);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.carousel-wrapper').forEach(wrapper => {
+        const id = wrapper.id.replace('carousel-', '');
+        showImage(id, 0);
+    });
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const minDate = `${yyyy}-${mm}-${dd}`;
+
+    const dateFromInput = document.querySelector('input[name="date_from"]');
+    const dateToInput = document.querySelector('input[name="date_to"]');
+    const checkInTimeInput = document.querySelector('input[name="check_in"]');
+    const checkOutTimeInput = document.querySelector('input[name="check_out"]');
+
+    if (dateFromInput && dateToInput) {
+        dateFromInput.min = minDate;
+        dateToInput.min = minDate;
+
+        dateFromInput.addEventListener("change", function () {
+            dateToInput.min = this.value;
+            setTimeRestrictions();
+        });
+
+        dateToInput.addEventListener("change", setTimeRestrictions);
+
+        function setTimeRestrictions() {
+            const now = new Date();
+            const currentHour = String(now.getHours()).padStart(2, '0');
+            const currentMinute = String(now.getMinutes()).padStart(2, '0');
+            const currentTime = `${currentHour}:${currentMinute}`;
+
+            if (dateFromInput.value === minDate) {
+                checkInTimeInput.min = currentTime;
+            } else {
+                checkInTimeInput.removeAttribute("min");
+            }
+
+            if (dateToInput.value === minDate) {
+                checkOutTimeInput.min = currentTime;
+            } else {
+                checkOutTimeInput.removeAttribute("min");
+            }
+        }
+    }
+});
+
+function showBookingModal(roomName, roomType, phone) {
+    document.getElementById('room_name').value = roomName;
+    document.getElementById('room_type').value = roomType;
+
+    // Set the phone input value (make sure the input with id="phone" exists)
+    document.getElementById('phone').value = phone || '';
+
+    // Reset form inputs except hidden fields and phone
+    const form = document.getElementById('booking-form');
+    form.reset();
+
+    // Reset phone again after reset (because reset clears all inputs)
+    document.getElementById('phone').value = phone || '';
+
+    // Hide previous messages and buttons
+    document.getElementById('booking-success-message').style.display = "none";
+    document.getElementById('download-room-receipt-btn').style.display = "none";
+
+    // Show modal
+    document.getElementById('booking-modal').style.display = 'block';
+}
+
+function closeBookingModal() {
+    document.getElementById('booking-modal').style.display = 'none';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('booking-modal');
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+}
+
+
+document.getElementById("booking-form").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+
+    fetch("/book_room", {
+        method: "POST",
+        body: formData,
+        headers: { "X-Requested-With": "XMLHttpRequest" }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const alertBox = document.getElementById("booking-alert");
+
+        if (data.success) {
+            window.roomReceiptData = {
+                room_name: formData.get("room_name"),
+                room_type: formData.get("room_type"),
+                username: "{{ session['username'] }}",
+                date_from: formData.get("date_from"),
+                date_to: formData.get("date_to"),
+                checkin_time: formData.get("check_in"),
+                checkout_time: formData.get("check_out")
+            };
+
+            document.getElementById("download-room-receipt-btn").style.display = "block";
+
+            alertBox.innerHTML = `<div class="alert success">✅ Booking Confirmed: ${data.message}</div>`;
+        } 
+
+        setTimeout(() => {
+            alertBox.innerHTML = "";
+        }, 2500);
+    })
+    .catch(error => {
+        console.error(error);
+        const alertBox = document.getElementById("booking-alert");
+        alertBox.innerHTML = `<div class="alert error">⚠️ Error during booking. Please try again.</div>`;
+
+        setTimeout(() => {
+            alertBox.innerHTML = "";
+        }, 2500);
+    });
+});
+
+function downloadRoomReceipt() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Get input values
+    const roomName = document.getElementById('room_name').value;
+    const roomType = document.getElementById('room_type').value;
+    const dateFrom = document.querySelector('input[name="date_from"]').value;
+    const dateTo = document.querySelector('input[name="date_to"]').value;
+    const checkIn = document.querySelector('input[name="check_in"]').value;
+    const checkOut = document.querySelector('input[name="check_out"]').value;
+
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(0, 102, 204); // blue color
+    doc.text("Room Booking Receipt", 20, 20);
+
+    // Draw a line under the title
+    doc.setDrawColor(0, 0, 0);
+    doc.line(20, 23, 190, 23);
+
+    // Section Title
+    doc.setFontSize(14);
+    doc.setTextColor(0);
+    doc.text("Booking Details", 20, 35);
+
+    // Room details
+    doc.setFontSize(12);
+    doc.setTextColor(50, 50, 50);
+    doc.text(`Room Name       : ${roomName}`, 20, 45);
+    doc.text(`Room Type       : ${roomType}`, 20, 52);
+    doc.text(`Check-in Date   : ${dateFrom}`, 20, 59);
+    doc.text(`Check-out Date  : ${dateTo}`, 20, 66);
+    doc.text(`Check-in Time   : ${checkIn}`, 20, 73);
+    doc.text(`Check-out Time  : ${checkOut}`, 20, 80);
+
+    // Divider
+    doc.line(20, 85, 190, 85);
+
+    // Footer Message
+    doc.setFontSize(12);
+    doc.setTextColor(0, 128, 0); // green
+    doc.text("✅ Thank you for booking with us!", 20, 95);
+
+    // Save PDF
+    doc.save(`RoomBooking_${roomName}.pdf`);
+}
+
+    </script>
+            </body>
+</html>

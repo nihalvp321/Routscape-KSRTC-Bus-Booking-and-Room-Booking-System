@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RouteScape</title>
+    <link rel="stylesheet" href="static/main.css">
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body>
+    
+    
+    <header>
+        <nav>
+            <div class="logo"><img src="static\logo.png" alt="RouteScape Logo"></div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+  <div class="hero-overlay"></div> 
+  <img class="hero-image" src="static/serene_backwaters_of_kumbalangi_28.jpg" alt="Kerala Backwaters" />
+  
+  <div class="hero-content">
+    <h1>Explore Kerala with Ease</h1>
+    <p>Affordable Packages to Dream Destinations</p>
+    <a href="/userregister" class="register-btn">Register Now</a>
+  </div>
+</section>
+
+    <!-- About Section -->
+   <section class="about" id="about">
+    <h2 class="section-title" style="font-size:32px;color:#4a1c3a;">ABOUT</h2>
+    <div class="about-container">
+        <div class="about-image">
+            <img src="static/ksrtcbus.jpg" alt="Kerala Scenery">
+        </div>
+        <div class="about-content">
+            <h2>About Us</h2>
+            <p>Immerse yourself in the rich heritage and breathtaking scenery of Kerala with KSRTC's Budget Tourism Cell...</p>
+        </div>
+    </div>
+</section>
+
+
+    <!-- Services Section -->
+<section class="services" id="services">
+    <h2 class="section-title">SERVICES</h2>
+    <div class="services-container">
+        <div class="service-card">
+            <img src="static/tea plantation.jpg" alt="Affordable Travel Packages">
+            <h3>Affordable Travel Packages</h3>
+            <p>Explore Kerala without breaking the bank. Our budget-friendly packages make it possible for everyone to enjoy the beauty and culture of Kerala.</p>
+        </div>
+        <div class="service-card">
+            <img src="static/resort.jpg" alt="Easy Online Booking">
+            <h3>Easy Online Booking</h3>
+            <p>Our intuitive KSRTC tour booking website ensures a hassle-free experience to book your desired packages effortlessly.</p>
+        </div>
+        <div class="service-card">
+            <img src="static/beach.jpg" alt="Diverse Destinations">
+            <h3>Diverse Destinations</h3>
+            <p>With a variety of locations to choose from, you can customize your travel experience and visit multiple tourist hotspots in Kerala.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials" id="testimonials">
+    <h2 class="section-title">TESTIMONIALS</h2>
+    
+    <div class="testimonial-wrapper">
+        <button class="scroll-btn left" onclick="scrollTestimonials(-1)">&#10094;</button>
+
+        <div class="testimonials-container" id="testimonialSlider">
+            {% for fb in feedbacks %}
+            <div class="testimonial-card">
+                <p class="testimonial-text">
+                    <i class="fas fa-quote-left"></i>
+                    {{ fb['comment'] }}
+                    <i class="fas fa-quote-right"></i>
+                </p>
+                <img src="{% if fb['profile_pic'] %}{{ url_for('static', filename='uploads/' + fb['profile_pic']) }}{% else %}{{ url_for('static', filename='noprofile.png') }}{% endif %}" alt="{{ fb['username'] }}">
+                <h3>{{ fb['username'] }}</h3>
+                <p class="designation">User Feedback</p>
+                <div class="stars">
+                    {% for star in range(fb['rating']) %}
+                        ⭐
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <button class="scroll-btn right" onclick="scrollTestimonials(1)">&#10095;</button>
+    </div>
+</section>
+
+ <!-- Footer Section -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-about">
+            <img src="static/logo.png" alt="RouteScape Logo" class="footer-logo">
+            <p>RouteScape is your gateway to affordable and memorable travel experiences across the beautiful landscapes of Kerala.</p>
+        </div>
+
+        <div class="footer-links">
+            <h3>Quick Links</h3>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="/userregister">Register</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-contact">
+            <h3>Contact Us</h3>
+            <p>Email: info@routescape.com</p>
+            <p>Phone: +91 98765 43210</p>
+            <p>Address: KSRTC Tourism Cell, Trivandrum, Kerala</p>
+
+            <div class="footer-social">
+                <a href="#" class="me-3"><i class="bi bi-facebook" style="font-size: 1.5rem;"></i></a>
+<a href="#" class="me-3"><i class="bi bi-instagram" style="font-size: 1.5rem;"></i></a>
+<a href="#"><i class="bi bi-twitter" style="font-size: 1.5rem;"></i></a>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>&copy; 2025 RouteScape. All rights reserved.</p>
+    </div>
+</footer>
+
+    
+
+    <script src="static/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+</head>
+<body>
+    <div class="profile-container">
+        <h2>Edit Profile</h2>
+        <div class="center-back">
+            <a href="{{ url_for('userhome') }}" class="back-btn">← Back to Home</a>
+        </div>
+        
+
+        <!-- Profile Picture -->
+        <div class="profile-pic-section">
+            <img src="{% if profile_pic != 'noprofile.png' %}{{ url_for('static', filename='uploads/' + profile_pic) }}{% else %}{{ url_for('static', filename='noprofile.png') }}{% endif %}?t={{ current_time }}" alt="Profile Pic" class="profile-pic">
+            <form action="/update_profile_pic" method="post" enctype="multipart/form-data">
+                <input type="file" name="profile_pic" required>
+                <button type="submit">Update Picture</button>
+            </form>
+            {% if profile_pic != 'noprofile.png' %}
+            <form action="/delete_profile_pic" method="post">
+                <button type="submit" class="delete-btn">Delete Picture</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Profile Details -->
+        <form action="/update_profile" method="POST" class="details-form">
+            <input type="text" name="username" value="{{ user.username }}" required>
+            <input type="email" name="email" value="{{ user.email }}" required>
+            <input type="text" name="address" value="{{ user.address }}">
+            <input type="text" name="state" value="{{ user.state }}">
+            <input type="text" name="pin" value="{{ user.pin }}">
+            <input type="text" name="phone" value="{{ user.phone }}">
+            <select name="gender">
+                <option value="">Select Gender</option>
+                <option value="Male" {% if user.gender == "Male" %}selected{% endif %}>Male</option>
+                <option value="Female" {% if user.gender == "Female" %}selected{% endif %}>Female</option>
+            </select>
+            <button type="submit">Update Profile</button>
+        </form>
+
+    </div>
+</body>
+</html>

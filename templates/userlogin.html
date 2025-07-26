@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='userlogin.css') }}">
+</head>
+<body>
+
+<div class="login-container">
+    <div class="image-side d-flex flex-column justify-content-center align-items-center text-white text-center p-4">
+        <h2>Explore Kerala with KSRTC</h2>
+        <p>Comfortable rides through God’s Own Country</p>
+    </div>
+
+    <div class="form-side">
+        <h2>Sign In</h2>
+
+        <!-- Flash Message Block -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      {% if message == 'Invalid credentials' %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+        <form action="{{ url_for('userlogin') }}" method="POST">
+            <input type="text" name="username" class="form-control" placeholder="Username" required>
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+            <button type="submit" class="btn btn-custom mt-2">Login</button>
+            <p class="small-text">Don't have an account? <a href="{{ url_for('userregister') }}">Sign up →</a></p>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

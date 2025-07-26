@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Routescape Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f4f4;
+    }
+    h3,h1{
+        font-style:underline;
+    }
+    .all-heading {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    color: #f4a300;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
+    border-bottom: 3px solid #f4a300;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.all-heading::after {
+    content: '';
+    width: 60px;
+    height: 4px;
+    background-color: #f4a300;
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+
+    .navbar {
+        background-color: #222;
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 70px;
+    }
+
+    .navbar img {
+        height: 40px;
+    }
+
+    .navbar a {
+        color: #f4a300;
+        text-decoration: none;
+        margin-left: 20px;
+    }
+
+    .wrapper {
+        display: flex;
+        height: calc(100vh - 70px);
+        overflow: hidden;
+    }
+
+    .sidebar {
+        width: 250px;
+        background-color: #2e2e2e;
+        color: white;
+        padding-top: 30px;
+        position: sticky;
+        top: 70px;
+        height: 100%;
+        overflow-y: auto;
+        flex-shrink: 0;
+    }
+
+    .sidebar h5 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #f4a300;
+    }
+
+    .sidebar a {
+        display: block;
+        padding: 12px 25px;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s;
+        cursor: pointer;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+        background-color: #444;
+    }
+
+    .main-content {
+        flex-grow: 1;
+        padding: 40px;
+        overflow-y: auto;
+        height: 100%;
+    }
+
+    .main-content h1 {
+        color: #333;
+    }
+
+    .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: flex-start;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 320px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.01);
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        gap: 10px;
+        background: #f9f9f9;
+    }
+
+    .profile-pic {
+        height: 32px;
+        width: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    .username {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .post-photo {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+    }
+
+    .card-body {
+        padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .caption {
+        font-size: 15px;
+        color: #444;
+        margin-bottom: 10px;
+    }
+
+    .timestamp {
+        font-size: 12px;
+        color: gray;
+    }
+
+    .bus-buttons-container {
+    display: flex;
+    justify-content: center; /* center the buttons horizontally */
+    gap: 20px;
+    margin: 20px 0;
+}
+
+    .admin-bus-btn {
+        background-color: #f4a300; /* Match your logo's green */
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s, transform 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .admin-bus-btn:hover {
+        background-color:rgb(214, 170, 81);
+        transform: translateY(-2px);
+    }
+    
+    #busForm input {
+        padding: 10px;
+        margin: 10px 10px 10px 0;
+        width: 200px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+    }
+    
+    #busForm button[type="submit"] {
+        padding: 10px 20px;
+        background-color: #f4a300;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+    
+    #busForm button[type="submit"]:hover {
+        background-color: rgb(214, 170, 81);
+    }
+    
+    #busTable {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    
+    #busTable th, #busTable td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: center;
+    }
+    
+    #busTable th {
+        background-color: #f0f0f0;
+    }
+    #editBusForm {
+        display: none; /* Hide the form initially */
+        margin-top: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    
+    #editBusForm form {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #editBusForm input {
+        margin: 5px 0;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    
+    td {
+    vertical-align: middle;
+    text-align: center; /* You can use 'left' or 'right' as needed */
+}
+
+.action-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 4px; /* Smaller margin for better spacing */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Update Button */
+.update-btn {
+    background-color: #0e4429;
+    color: white;
+}
+
+.update-btn:hover {
+    background-color: #0a3a22;
+    transform: translateY(-1px);
+}
+
+/* Delete Button */
+.delete-btn {
+    background-color: #c62828;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #a52121;
+    transform: translateY(-1px);
+}
+
+    .update-submit-btn {
+        background-color: #0e4429; /* Match logo's green */
+        color: #fff;
+        padding: 12px 24px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .update-submit-btn:hover {
+        background-color: #0a3a22;
+        transform: translateY(-2px);
+    }
+    #busSeatSection {
+        display: none;
+        margin-top: 20px;
+    }
+    
+    .seat-layout {
+        display: grid;
+        grid-template-columns: repeat(8, 50px);
+        gap: 8px;
+        margin-top: 10px;
+    }
+    
+    .seat {
+        width: 50px;
+        height: 50px;
+        background-color: #90ee90; /* Available: light green */
+        border-radius: 8px;
+        text-align: center;
+        font-size: 12px;
+        padding: 3px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    .seat.booked {
+        background-color: #ff4d4d;
+        color: white;
+    }
+    
+    .seat-user {
+        display: block;
+        font-size: 9px;
+        margin-top: 3px;
+        color: #fff;
+    }
+    
+    .bus-card {
+        background-color: #f4f4f4;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .booked-seats-table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+    
+    .booked-seats-table th, .booked-seats-table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    
+    .booked-seats-table th {
+        background-color: #f4f4f4;
+    }
+    
+    .booked-seats-table img {
+        border-radius: 50%;
+    }
+    
+    /* Room Details Section */
+    .compact-room-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.room-status-box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 0.6rem;
+    background-color: #f2f2f2;
+    width: 140px;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.room-status-box:hover {
+    transform: scale(1.03);
+}
+
+.room-status-box.available {
+    background-color: #d4edda;
+    border-color: #28a745;
+}
+
+.room-status-box.booked {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+}
+
+.room-box {
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    margin-bottom: 6px;
+}
+
+.room-label {
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.room-type {
+    font-size: 0.75rem;
+    color: #555;
+    margin-top: 2px;
+}
+
+.booked-by {
+    font-size: 0.7rem;
+    color: #c82333;
+    margin-top: 4px;
+}
+
+    
+    .booking-table-section {
+        margin-top: 2rem;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .booking-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .booking-table th,
+    .booking-table td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+    
+    .booking-table th {
+        background-color: #f4f4f4;
+    }
+    
+    .booking-table td {
+        color: #333;
+    }
+    
+    /* Accessory Card Styling */
+.accessory-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.accessory-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.accessory-card h3 {
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: #f4a300;
+    margin-bottom: 15px;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
+}
+
+.accessory-card p {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: #555;
+}
+
+.accessory-card .rate {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #28a745;
+}
+
+/* Custom Button */
+.custom-btn {
+    background: linear-gradient(135deg, #f4a300, #e28f00);
+    color: white;
+    font-weight: bold;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    margin: 10px;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+}
+
+.custom-btn:hover {
+    background: linear-gradient(135deg, #e28f00, #cc7c00);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+.custom-btn:active {
+    transform: scale(0.97);
+    box-shadow: none;
+}
+
+/* Carousel Styling */
+.carousel {
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-inner {
+    border-radius: 10px;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Carousel Controls Styling */
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Table Styling */
+.table th, .table td {
+    vertical-align: middle;
+    padding: 15px;
+    font-size: 1rem;
+}
+
+.table th {
+    background-color: #f4a300;
+    color: white;
+    text-align: center;
+}
+
+.table td {
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+/* Button Styles */
+.btn-custom,
+.btn-warning,
+.btn-danger {
+    background-color: #f4a300;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: bold;
+}
+
+/* Hover Effects for Buttons */
+.btn-custom:hover,
+.btn-warning:hover,
+.btn-danger:hover {
+    background-color: #e28f00;
+    transform: translateY(-2px);
+}
+
+/* Custom Red Button (Delete Button) */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+/* Input/textarea styles */
+form input,
+form textarea,
+form button {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+    color: #333;
+    box-sizing: border-box;
+}
+
+/* Focus styles for input/textarea */
+form input:focus,
+form textarea:focus {
+    outline: none;
+    border-color: #f4a300;
+    background-color: #fff;
+    box-shadow: 0 0 8px rgba(244, 163, 0, 0.3);
+}
+
+/* Custom file input */
+form input[type="file"] {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Button Styles for Submit */
+form button {
+    background-color: #f4a300;
+    color: white;
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+form button:hover {
+    background-color: #e28f00;
+    transform: translateY(-2px);
+}
+
+form button:active {
+    transform: scale(0.98);
+    background-color: #cc7c00;
+}
+
+/* Image Preview */
+.image-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+/* Accessibility & Responsiveness */
+@media (max-width: 768px) {
+    .accessory-card {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .accessory-card h3 {
+        font-size: 1.3rem;
+    }
+
+    .carousel-item img {
+        height: 150px;
+    }
+
+    .btn-custom,
+    .btn-warning,
+    .btn-danger {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+    }
+}
+    
+/*Feedback*/
+/* Section Title Styling */
+.section-title {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    color:rgb(23, 23, 22);
+    margin-bottom: 20px;
+}
+
+/* Testimonial Wrapper */
+.testimonial-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Scroll Button Styling */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    border: none;
+    font-size: 2rem;
+    color: #f4a300;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.scroll-btn.left {
+    left: 10px;
+}
+
+.scroll-btn.right {
+    right: 10px;
+}
+
+/* Testimonials Container (Grid Layout) */
+.testimonials-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+    gap: 20px; /* Space between cards */
+    width: 100%;
+    padding: 20px;
+    overflow: hidden;
+}
+
+/* Testimonial Card Styling */
+.testimonial-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.testimonial-text {
+    font-style: italic;
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.testimonial-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.testimonial-card h3 {
+    font-size: 1.2rem;
+    color: #007bff;
+    margin-bottom: 5px;
+}
+
+.testimonial-card .designation {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 10px;
+}
+
+.stars {
+    font-size: 1.2rem;
+    color: #ffcc00;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 1.6rem;
+    }
+
+    .testimonial-card {
+        padding: 15px;
+    }
+
+    .testimonial-text {
+        font-size: 0.9rem;
+    }
+}
+
+    
+    </style>    
+</head>
+<body>
+
+    <div class="navbar">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Routescape Logo">
+        <div>
+            <a href="{{ url_for('adminlogout') }}">Logout</a>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <div class="sidebar">
+            <h5>Admin Dashboard</h5>
+            <a data-section="memories">User Memories</a>
+            <a data-section="bus">Bus Details</a>
+            <a data-section="room">Room Details</a>
+            <a data-section="accessory">Accessory Rentals</a>
+            <a data-section="feedbacks">User Feedbacks</a>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <!-- Content will be dynamically loaded here -->
+        </div>
+    </div>
+
+    <script>
+        const sections = {
+            memories: `
+            <h3 class="all-heading">User Memories</h3>
+            <div class="cards-container">
+                {% for post in posts %}
+                <div class="card">
+                    <div class="card-header">
+                        <img src="{{ url_for('static', filename='uploads/' + (post['profile_pic'] if post['profile_pic'] else 'noprofile.png')) }}" class="profile-pic" alt="Profile">
+                        <span class="username">{{ post.username }}</span>
+                    </div>
+                    <img src="{{ url_for('static', filename='uploads/' + post['photo']) }}" class="post-photo" alt="Post">
+                    <div class="card-body">
+                        <p class="caption">{{ post.caption }}</p>
+                        <p class="timestamp">{{ post.created_at }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        `,
+        bus:`<h3 class="all-heading">Bus Details</h3>
+
+<!-- Add/View Buttons -->
+<div class="bus-buttons-container">
+    <button class="admin-bus-btn" onclick="showAddBusForm()">➕ Add Bus Details</button>
+    <button class="admin-bus-btn" onclick="viewBookedDetails()">📋 View Booked Details</button>
+</div>
+
+<!-- Add Bus Form -->
+<div id="busFormSection" style="display: none; margin-bottom: 30px;">
+    <h3 class="section-title">Add New Bus</h3>
+    <form id="busForm" method="POST" action="/admin/add_bus" enctype="multipart/form-data" onsubmit="return validateBusForm()">
+        <input type="text" id="busNumber" name="bus_number" placeholder="Bus Number" required>
+        <input type="text" id="startingPoint" name="starting_point" placeholder="Starting Point" required>
+        <input type="text" id="endingPoint" name="ending_point" placeholder="Ending Point" required>
+        <input type="number" id="seatCount" name="total_seats" placeholder="Total Seats" required>
+        <input type="number" id="ticketPrice" name="rate" step="0.01" placeholder="Ticket Price" required>
+        <input type="file" name="bus_image" accept="image/*"> <!-- Image Upload -->
+        <input type="time" id="sourceTime" name="source_time" required>
+        <input type="time" id="destinationTime" name="destination_time" required>
+        <button type="submit">Add Bus</button>
+    </form>
+</div>
+
+<!-- Bus Table -->
+<div id="busTableSection" style="margin-top: 30px;">
+    <h2 class="section-title">Bus Listings</h2>
+    <table id="busTable">
+        <thead>
+            <tr>
+                <th>Bus Number</th>
+                <th>Starting Point</th>
+                <th>Ending Point</th>
+                <th>Ticket Price</th>
+                <th>Total Seats</th>
+                <th>Image</th>
+                <th>Source Time</th>
+<th>Destination Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bus in buses %}
+            <tr>
+                <td>{{ bus[1] }}</td>
+                <td>{{ bus[2] }}</td>
+                <td>{{ bus[3] }}</td>
+                <td>₹{{ bus[4] }}</td> <!-- Ticket Price -->
+                <td>{{ bus[5] }}</td>   <!-- Total Seats -->
+                <td>
+    {% if bus[6] %}
+        <img src="{{ url_for('static', filename=bus[6]) }}" alt="Bus Image" width="100">
+    {% else %}
+        <p>No Image</p>
+    {% endif %}
+</td>
+<td>{{ bus[7] }}</td> <!-- Source Time -->
+<td>{{ bus[8] }}</td> <!-- Destination Time -->
+
+
+                <td>
+                    <button class="action-btn update-btn" onclick="showEditBusForm({{ bus[0] }})">✏️ Update</button>
+                    <button class="action-btn delete-btn" onclick="deleteBus({{ bus[0] }})">🗑️ Delete</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Edit Bus Form -->
+<div id="editBusForm" style="display:none; margin-top: 20px;">
+    <h3 class="section-title">Edit Bus</h3>
+    <form id="editForm" method="POST" name="bus_id" enctype="multipart/form-data">
+        <input type="text" placeholder="Bus Number" name="bus_number" required>
+        <input type="text" placeholder="Starting Point" name="starting_point" required>
+        <input type="text" placeholder="Ending Point" name="ending_point" required>
+        <input type="number" placeholder="Total Seats" name="total_seats" required>
+        <input type="number" step="0.01" placeholder="Ticket Price" name="rate" required>
+        <input type="file" name="bus_image" accept="image/*"> <!-- Image upload input -->
+        <input type="time" name="source_time" required>
+        <input type="time" name="destination_time" required>
+        <input type="hidden" name="bus_id">
+        <button type="submit" class="update-submit-btn">Update</button>
+    </form>
+</div>
+
+<!-- Booked Seat Layout -->
+<div id="bookedDetailsSection" style="display: none; margin-top: 30px;">
+    <h3 class="section-title">Bus Booking Status</h3>
+
+    {% for bus in buses %}
+        <div class="bus-card">
+            <h4>{{ bus[1] }} ({{ bus[2] }} → {{ bus[3] }})</h4>
+            <!-- Seat layout with hover info -->
+<div class="seat-layout">
+    {% for i in range(1, bus[5] + 1) %}
+        {% set seat_id = 'S' ~ i %}
+        {% set seat_data = booked_seat_map.get(bus[0], {}).get(seat_id) %}
+        <div class="seat {% if seat_data %}booked{% else %}available{% endif %}" title="{{ seat_data[1] if seat_data else 'Available' }}">
+            {{ seat_id }}
+            {% if seat_data %}
+                <span class="seat-user">👤 {{ seat_data[1] }}</span>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+
+            <!-- Booked Seat User Information Table -->
+            {% if booked_seat_map.get(bus[0]) %}
+    <table class="booked-seats-table">
+        <thead>
+            <tr>
+                <th>Profile Pic</th>
+                <th>Username</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>Bus Number</th>
+                <th>Starting Point</th>
+                <th>Ending Point</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for seat in booked_seat_map[bus[0]].values() %}
+                <tr>
+                    <td>
+    <img src="{{ url_for('static', filename='uploads/' + (seat[2] if seat[2] else 'noprofile.png')) }}" 
+         alt="Profile Pic"  
+         style="height: 32px;
+        width: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        flex-shrink: 0;">
+</td>
+                    <td>{{ seat[1] }}</td>
+                    <td>{{ seat[3] }}</td>
+                    <td>{{ seat[4] }}</td>
+                    <td>{{ seat[5] }}</td>
+                    <td>{{ seat[6] }}</td>
+                    <td>{{ seat[7] }}</td>
+                    <td>{{ seat[8] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No seats booked for this bus yet.</p>
+{% endif %}
+
+        </div>
+    {% endfor %}
+</div>`,
+    
+            room: `<h3 class="all-heading">Room Details</h3>
+<!-- Room Details Section -->
+<div id="detail3" class="details-section">
+    <h2 class="section-title">Room Status Overview</h2>
+
+    <!-- Room Status Boxes -->
+    <div class="compact-room-grid">
+        {% for room in rooms %}
+        <div class="room-status-box {% if room.is_available == 1 %}available{% else %}booked{% endif %}">
+            <div class="room-box"></div>
+            <div class="room-label">
+                Room {{ room.room_name }}
+                <div class="room-type">{{ room.type }}</div>
+                {% if room.is_available == 0 %}
+                <div class="booked-by">Booked by: {{ room.booked_by }}</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Booking Table -->
+    <div class="booking-table-section">
+        <h3 class="section-title">Booking Details</h3>
+        {% if bookings and bookings|length > 0 %}
+        <div class="table-container">
+            <table class="booking-table">
+                <thead>
+                    <tr>
+                        <th>Room Name</th>
+                        <th>Username</th>
+                        <th>Phone</th>
+                        <th>Date From</th>
+                        <th>Date To</th>
+                        <th>Check-in Time</th>
+                        <th>Check-out Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bookings %}
+                    <tr>
+                        <td>{{ b.room_name }}</td>
+                        <td>{{ b.username }}</td>
+                        <td>{{ b.phone }}</td>
+                        <td>{{ b.date_from }}</td>
+                        <td>{{ b.date_to }}</td>
+                        <td>{{ b.check_in_time }}</td>
+                        <td>{{ b.check_out_time }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: #f5c04c;">No bookings found.</p>
+        {% endif %}
+    </div>
+</div>
+`,
+            accessory: `<h3 class="all-heading">Accessory Rentals</h3>
+        <!-- Section for Adding Accessories -->
+        <div id="addAccessoriesSection" style="display:block;">
+            <h2 class="section-title">Add Accessories</h2>
+            <form id="accessoryForm" action="/add_accessory" method="POST" enctype="multipart/form-data" class="form-group">
+                <input type="text" name="name" placeholder="Accessory Name" class="form-control mb-3" required><br>
+                <textarea name="description" placeholder="Description" class="form-control mb-3"></textarea><br>
+                <input type="number" name="rate" placeholder="Rate" class="form-control mb-3" required><br>
+                <input type="number" name="total_items" placeholder="Item Available" class="form-control mb-3" required><br>
+                <input type="file" name="images" multiple class="form-control mb-3" required><br>
+                <button type="submit" class="btn btn-custom">Add Accessory</button>
+            </form>
+
+           <h2 class="section-title">Accessory List</h2>
+
+<!-- Check if there are accessories -->
+{% if accessories|length == 0 %}
+    <div class="alert alert-danger" role="alert" style="display: flex; justify-content: center; align-items: center; text-align: center;">
+    No accessories found.
+</div>
+
+{% else %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4">
+        {% for accessory in accessories %}
+            <div class="col mb-4">
+                <div class="accessory-card card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ accessory.name }}</h5>
+                        <p class="card-text">{{ accessory.description }}</p>
+                        <p><strong>Rate:</strong> ₹{{ accessory.rate }}</p>
+                        <p class="card-text">Available Items:{{ accessory.total_items }}</p>
+
+                        <!-- Carousel for displaying accessory images -->
+                        <div id="carousel_{{ accessory.id }}" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                {% for img in accessory.images %}
+                                    <div class="carousel-item {% if loop.index0 == 0 %}active{% endif %}">
+                                        <img src="{{ url_for('static', filename=img) }}" class="d-block w-100" style="height: 200px; object-fit: cover;" alt="Accessory Image">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <!-- Carousel Controls (only show if there is more than one image) -->
+                            {% if accessory.images|length > 1 %}
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel_{{ accessory.id }}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel_{{ accessory.id }}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- Edit Button to Toggle the Edit Form -->
+                        <button class="btn btn-warning mt-2" onclick="toggleEditForm({{ accessory.id }})">Edit</button>
+
+                        <!-- Edit Form (Initially Hidden) -->
+                        <form id="editForm_{{ accessory.id }}" action="/edit_accessory/{{ accessory.id }}" method="POST" enctype="multipart/form-data" style="display:none;" class="mt-3">
+                            <input type="text" name="name" value="{{ accessory.name }}" class="form-control mb-3" required><br>
+                            <textarea name="description" class="form-control mb-3" required>{{ accessory.description }}</textarea><br>
+                            <input type="number" name="rate" value="{{ accessory.rate }}" class="form-control mb-3" required><br>
+                            <input type="number" name="total_items" placeholder="Item Available" value="{{ accessory.total_items }}" class="form-control mb-3" required><br>
+                            <input type="file" name="images" multiple class="form-control mb-3"><br>
+                            <button type="submit" class="btn btn-success">Update Accessory</button>
+                            <button type="button" class="btn btn-secondary" onclick="toggleEditForm({{ accessory.id }})">Cancel</button>
+                        </form>
+
+                        <!-- Delete Button -->
+                        <form action="/delete_accessory/{{ accessory.id }}" method="POST" style="display:inline;" class="mt-3">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure to delete?')">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+<h2 class="section-title">Accessory Bookings</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Profile Pic</th>
+                <th>Accessory Name</th>
+                <th>User Name</th>
+                <th>Phone</th>
+                <th>Booking Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if accessory_bookings %}
+                {% for booking in accessory_bookings %}
+                    <tr>
+                    <td>
+    <img src="{{ url_for('static', filename='uploads/' + (booking.profile_pic if booking.profile_pic else 'noprofile.png')) }}" 
+         alt="Profile Pic"  
+         style="height: 32px;
+                width: 32px;
+                border-radius: 50%;
+                object-fit: cover;
+                flex-shrink: 0;">
+</td>
+
+                        <td>{{ booking.accessory_name }}</td>
+                        <td>{{ booking.username }}</td>
+                        <td>{{ booking.phone }}</td>
+                        <td>{{ booking.booking_date }}</td>
+                        
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">No bookings found for available accessories.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+`,
+            feedbacks: `<h3 class="all-heading">Feedbacks</h3>
+    
+<div class="testimonial-wrapper">
+
+    <div class="testimonials-container" id="testimonialSlider">
+        {% for fb in feedbacks %}
+        <div class="testimonial-card">
+            <p class="testimonial-text">
+                <i class="fas fa-quote-left"></i>
+                {{ fb['comment'] }}
+                <i class="fas fa-quote-right"></i>
+            </p>
+            <img src="{% if fb['profile_pic'] %}{{ url_for('static', filename='uploads/' + fb['profile_pic']) }}{% else %}{{ url_for('static', filename='noprofile.png') }}{% endif %}" alt="{{ fb['username'] }}">
+            <h3>{{ fb['username'] }}</h3>
+            <p class="designation">User Feedback</p>
+            <div class="stars">
+                {% for star in range(fb['rating']) %}
+                    ⭐
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+`
+        };
+
+        function loadSection(section) {
+            const content = sections[section] || `<h1>Welcome, Admin!</h1><p>This is your Routescape admin dashboard.</p>`;
+            document.getElementById('mainContent').innerHTML = content;
+
+            localStorage.setItem('admin_active_section', section);
+
+            document.querySelectorAll('.sidebar a').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.section === section) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', () => {
+                loadSection(link.dataset.section);
+            });
+        });
+
+        window.onload = function() {
+            if (!document.referrer.includes('/admin')) {
+                window.location.href = "{{ url_for('adminlogin') }}";
+            }
+            const savedSection = localStorage.getItem('admin_active_section') || 'memories';
+            loadSection(savedSection);
+        };
+        function showAddBusForm() {
+            const formSection = document.getElementById('busFormSection');
+            formSection.style.display = formSection.style.display === 'none' ? 'block' : 'none';
+        }
+    
+        function addBus(event) {
+            event.preventDefault();
+            const busNumber = document.getElementById('busNumber').value;
+            const busRoute = document.getElementById('busRoute').value;
+            const seatCount = document.getElementById('seatCount').value;
+            const ticketPrice = document.getElementById('ticketPrice').value;
+    
+            const table = document.getElementById('busTable').querySelector('tbody');
+            const newRow = document.createElement('tr');
+    
+            newRow.innerHTML = `
+                <td>${busNumber}</td>
+                <td>${busRoute}</td>
+                <td>${seatCount}</td>
+                <td>₹${ticketPrice}</td>
+            `;
+    
+            table.appendChild(newRow);
+    
+            document.getElementById('busForm').reset();
+            document.getElementById('busFormSection').style.display = 'none';
+        }
+
+        function showEditBusForm(busId) {
+            // Hide add form if it's open
+            document.getElementById('busFormSection').style.display = 'none';
+        
+            // Find the row for this bus
+            const rows = document.querySelectorAll("#busTable tbody tr");
+            let selectedRow = null;
+            rows.forEach(row => {
+                const updateBtn = row.querySelector("button.update-btn");
+                if (updateBtn && updateBtn.getAttribute("onclick") === `showEditBusForm(${busId})`) {
+                    selectedRow = row;
+                }
+            });
+        
+            if (!selectedRow) {
+                alert("Bus not found.");
+                return;
+            }
+        
+            const cells = selectedRow.querySelectorAll("td");
+        
+            const bus_number = cells[0].innerText.trim();
+            const starting_point = cells[1].innerText.trim();
+            const ending_point = cells[2].innerText.trim();
+            const rate = parseFloat(cells[3].innerText.replace("₹", "").trim());
+            const total_seats = parseInt(cells[4].innerText.trim());
+            const source_time = cells[6].innerText.trim();
+            const destination_time = cells[7].innerText.trim();
+        
+            // Populate the form
+            const form = document.getElementById('editForm');
+            form.bus_number.value = bus_number;
+            form.starting_point.value = starting_point;
+            form.ending_point.value = ending_point;
+            form.rate.value = rate;
+            form.total_seats.value = total_seats;
+            form.source_time.value = source_time;
+            form.destination_time.value = destination_time;
+            form.bus_id.value = busId;
+        
+            // Set form action
+            form.action = `/admin/edit_bus/${busId}`;
+        
+            // Show the form
+            document.getElementById('editBusForm').style.display = 'block';
+        
+            // Scroll to the form
+            form.scrollIntoView({ behavior: "smooth" });
+        }
+        
+        // Mock function to get bus details by ID (replace with actual implementation)
+        function getBusDetailsById(busId) {
+            return {
+                id: busId,
+                bus_number: "B001",
+                starting_point: "City A",
+                stops: "Stop 1, Stop 2, Stop 3",
+                ending_point: "City B",
+                total_seats: 40,
+                rate: 15.00
+            };
+        }
+        
+        function deleteBus(busId) {
+            if (confirm("Are you sure you want to delete this bus?")) {
+                const form = document.createElement("form");
+                form.method = "POST";  // Use POST for the delete request
+                form.action = "/admin/delete_bus/" + busId;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        function viewBookedDetails() {
+            const section = document.getElementById("bookedDetailsSection");
+            section.style.display = (section.style.display === "none") ? "block" : "none";
+        }
+    
+
+
+
+        function toggleEditForm(id) {
+            const form = document.getElementById(`editForm_${id}`);
+            if (form.style.display === "none" || form.style.display === "") {
+                form.style.display = "block";
+            } else {
+                form.style.display = "none";
+            }
+        }
+
+    </script>
+
+</body>
+</html>

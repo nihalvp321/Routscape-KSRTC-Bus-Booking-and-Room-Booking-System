@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Room Manager Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='roommanager_login.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fff;  /* solid white */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        
+        .login-container {
+            background-color: #fff;
+            padding: 40px 35px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(244, 163, 0, 0.3);
+            width: 350px;
+            text-align: center;
+            animation: fadeIn 0.6s ease-in-out;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .login-container:hover {
+            box-shadow: 0 20px 40px rgba(244, 163, 0, 0.5);
+        }
+        
+        .logo {
+            width: 80px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 5px #f4a300);
+        }
+        
+        h2 {
+            margin-bottom: 25px;
+            color: #f4a300;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+        }
+        input, button {
+    box-sizing: border-box;
+}
+
+        input {
+    width: 100%;
+    padding: 14px 15px;
+    margin: 12px 0 18px 0;
+    border: 1.8px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    display: block;
+}
+        
+        input:focus {
+            border-color: #f4a300;
+            outline: none;
+            box-shadow: 0 0 8px #f4a300aa;
+        }
+        
+        button {
+    width: 100%;
+    padding: 14px;
+    background-color: #f4a300;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 6px 12px #f4a300aa;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    margin-top: 10px;
+    display: block;
+}
+        
+        button:hover {
+            background-color: #d18e00;
+            box-shadow: 0 8px 18px #d18e00cc;
+        }
+        
+        .flash.danger {
+            color: #cc0000;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" role="main" aria-label="Room Manager login form">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="logo" />
+        <h2>Room Manager Login</h2>
+        <form method="POST" novalidate>
+            <input type="text" name="username" placeholder="Username" required aria-label="Username" autocomplete="username" />
+            <input type="password" name="password" placeholder="Password" required aria-label="Password" autocomplete="current-password" />
+            <button type="submit" aria-label="Submit login form">Login</button>
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            {% if message == 'Invalid credentials' %}
+              <p class="flash {{ category }}" role="alert">{{ message }}</p>
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+    </div>
+</body>
+</html>

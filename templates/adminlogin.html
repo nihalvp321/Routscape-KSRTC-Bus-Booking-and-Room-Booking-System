@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Routescape Admin Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet" />
+    <style>
+        /* Reset some basic */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #fff;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        .login-container {
+            background: #fff;
+            padding: 40px 35px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(244, 163, 0, 0.3);
+            width: 380px;
+            text-align: center;
+            transition: box-shadow 0.3s ease;
+        }
+        .login-container:hover {
+            box-shadow: 0 20px 40px rgba(244, 163, 0, 0.5);
+        }
+        img.logo {
+            width: 110px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 5px #f4a300);
+        }
+        h2 {
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #f4a300;
+            letter-spacing: 1.2px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px 15px;
+            margin: 12px 0 18px 0;
+            border: 1.8px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #f4a300;
+            outline: none;
+            box-shadow: 0 0 8px #f4a300aa;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #f4a300;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 12px #f4a300aa;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        button:hover {
+            background: #d18e00;
+            box-shadow: 0 8px 18px #d18e00cc;
+        }
+        .error {
+            background: #ffe6e6;
+            color: #cc0000;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px #cc000030;
+            user-select: none;
+        }
+        @media (max-width: 420px) {
+            .login-container {
+                width: 90vw;
+                padding: 30px 20px;
+            }
+            input[type="text"],
+            input[type="password"] {
+                font-size: 14px;
+                padding: 12px 14px;
+            }
+            button {
+                font-size: 16px;
+                padding: 12px;
+            }
+            h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" role="main" aria-label="Admin login form">
+        <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="Routescape Logo" />
+        <h2>Admin Login</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="error" role="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST" novalidate>
+            <input type="text" name="username" placeholder="Username" required aria-label="Username" autocomplete="username" />
+            <input type="password" name="password" placeholder="Password" required aria-label="Password" autocomplete="current-password" />
+            <button type="submit" aria-label="Submit login form">Login</button>
+        </form>
+    </div>
+</body>
+</html>

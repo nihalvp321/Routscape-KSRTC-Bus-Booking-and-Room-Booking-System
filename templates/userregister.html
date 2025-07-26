@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='userregister.css') }}">
+</head>
+<body>
+
+<div class="register-container">
+    <div class="image-side d-flex flex-column justify-content-center align-items-center text-white text-center p-4">
+        <h2>Explore Kerala with KSRTC</h2>
+        <p>Comfortable rides through God’s Own Country</p>
+    </div>
+
+    <div class="form-side">
+        <h2>Sign Up</h2>
+        <form action="{{ url_for('userregister') }}" method="POST">
+            <input type="text" name="username" class="form-control" placeholder="Username" required>
+            <input type="password" name="password" class="form-control" placeholder="Password" required>
+            <input type="password" name="confirm_password" class="form-control" placeholder="Confirm Password" required>
+            <input type="email" name="email" class="form-control" placeholder="Email" required>
+            <input type="text" name="address" class="form-control" placeholder="Address" required>
+            <input type="text" name="state" class="form-control" placeholder="State" required>
+            <input type="text" name="pin" class="form-control" placeholder="PIN Code" required>
+            <input type="text" name="phone" class="form-control" placeholder="Phone Number" required>
+
+            <select name="gender" class="form-select" required>
+                <option value="" disabled selected>Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+
+            <button type="submit" class="btn btn-custom mt-2">Sign Up</button>
+            <p class="small-text">Already have an account? <a href="{{ url_for('userlogin') }}">Sign in →</a></p>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
